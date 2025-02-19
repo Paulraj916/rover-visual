@@ -1,100 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mars Rover Simulation</title>
     <style>
       body {
         font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background-image: url("https://ik.imagekit.io/eo4tkd1jch/image.jpeg?updatedAt=1739986155419");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        color: white;
+      }
+
+      /* Main layout */
+      .container {
         display: flex;
-        justify-content: space-between;
-        /* padding: 20px; */
-        background-image: url("538159.jpg");
-        background-size: cover; /* Covers the full screen */
-        background-position: center; /* Centers the image */
-        background-repeat: no-repeat; /* Ensures the full image is shown */
-        height: 90vh;
+        flex-direction: row;
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1800px;
+        margin: 0 auto;
+        height: calc(100vh - 4rem);
       }
-      .input-div {
-        margin: 60px 30px;
+
+      @media (max-width: 1024px) {
+        .container {
+          flex-direction: column;
+          height: auto;
+        }
       }
+
+      /* Input Section */
+      .input-section {
+        flex: 0 0 400px;
+      }
+
+      @media (max-width: 1024px) {
+        .input-section {
+          flex: none;
+          width: 100%;
+          max-width: 500px;
+          margin: 0 auto;
+        }
+      }
+
       .enter-input-heading {
         font-size: 30px;
         color: white;
-        padding-left: 40px;
+        margin-bottom: 1.5rem;
       }
+
       #input-area {
-        background-color: rgb(0, 0, 0, 0.5);
-        width: 19em;
+        background-color: rgba(0, 0, 0, 0.5);
         border: 1px solid rgb(255, 255, 255);
         padding: 25px;
         border-radius: 20px;
       }
-      input {
+
+      input, textarea {
         background-color: rgb(227, 227, 227);
         height: 40px;
-        width: 20em;
+        width: 100%;
         border-radius: 5px;
         border: 1px solid black;
         margin-bottom: 10px;
         padding-left: 10px;
         font-size: 14px;
+        box-sizing: border-box;
       }
-      textarea {
-        background-color: rgb(227, 227, 227);
-        height: 40px;
-        width: 20em;
-        border-radius: 5px;
-        border: 1px solid black;
-        margin-bottom: 5px;
-        padding-left: 10px;
-        font-size: 14px;
-      }
+
       button {
         background-color: rgb(255, 70, 24);
         height: 40px;
-        width: 16em;
+        width: 100%;
         border-radius: 20px;
         border: 1px solid black;
         color: white;
         font-size: 17px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
       }
- 
+
+      button:hover {
+        background-color: rgb(220, 60, 20);
+      }
+
+      /* Simulation Section */
       #simulation-section {
-        width: 55%;
+        flex: 1;
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 20px;
+        padding: 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        overflow-y: auto;
+        max-height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
       }
- 
+
+      #simulation-section::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      #simulation-section::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+
+      #simulation-section::-webkit-scrollbar-thumb {
+        background: rgba(255, 70, 24, 0.5);
+        border-radius: 4px;
+      }
+
+      #simulation-section::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 70, 24, 0.7);
+      }
+
+      #simulation-section h2 {
+        color: white;
+        font-size: 24px;
+        margin: 0;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      /* Grid */
       #grid {
         display: grid;
-        gap: 2px;
-        margin-top: 20px;
+        gap: 4px;
+        margin: 0 auto;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 15px;
+        border-radius: 10px;
+        width: fit-content;
       }
+
       .cell {
-        width: 30px;
-        height: 30px;
-        border: 1px solid #ccc;
+        width: 40px;
+        height: 40px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        background-color: rgba(0, 0, 0, 0.4);
         display: flex;
         justify-content: center;
         align-items: center;
         font-weight: bold;
+        font-size: 20px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
       }
-      #status,
+
+      @media (max-width: 480px) {
+        .cell {
+          width: 30px;
+          height: 30px;
+          font-size: 16px;
+        }
+      }
+
+      .cell:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      /* Status and Final Positions */
+      #status {
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        font-size: 16px;
+        text-align: center;
+        margin: 0;
+        position: sticky;
+      }
+
       #final-positions {
-        margin-top: 10px;
-        font-weight: bold;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin: 0;
       }
-      #final-positions {
-        margin-top: 20px;
+
+      #final-positions h3 {
+        color: rgb(255, 70, 24);
+        margin: 0 0 15px 0;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
+
       #final-positions ul {
-        padding-left: 20px;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      #final-positions li {
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
     </style>
-  </head>
-  <body>
-    <section>
-      <div class="input-div">
+</head>
+<body>
+    <div class="container">
+      <div class="input-section">
         <h1 class="enter-input-heading">Enter the input here</h1>
         <div id="input-area">
           <div>
@@ -125,7 +246,7 @@
               id="no-of-rovers"
               type="text"
               placeholder="Number of Rovers (eg. 2)"
-              value="1"
+              value="2"
             />
           </div>
           <div>
@@ -146,14 +267,15 @@ LBBF</textarea>
           <div><button id="start-btn">Start Movement</button></div>
         </div>
       </div>
-      <div></div>
-    </section>
-    <div id="simulation-section">
-      <h2>Mars Rover Simulation</h2>
-      <div id="grid"></div>
-      <div id="status"></div>
-      <div id="final-positions"></div>
+      <div id="simulation-section">
+        <h2>Mars Rover Simulation</h2>
+        <div id="grid"></div>
+        <div id="status"></div>
+        <div id="final-positions"></div>
+      </div>
     </div>
+
+    <!-- Script section remains unchanged -->
     <script type="module">
       import { Plateau } from "./plateau.js";
       import { inputParser } from "./utils.js";
@@ -161,30 +283,21 @@ LBBF</textarea>
       var start_btn = document.querySelector("#start-btn");
       start_btn.addEventListener("click", () => {
         const grid_size = document.querySelector("#grid-size").value;
-        const no_of_obstscles =document.querySelector("#no-of-obstscles").value;
+        const no_of_obstscles = document.querySelector("#no-of-obstscles").value;
         const obstacle_coordinates = document.querySelector("#obstacle-coordinates").value;
         const no_of_rovers = document.querySelector("#no-of-rovers").value;
         const rover_coordinates = document.querySelector("#rover-coordinates").value.split("\n");
-        console.log("Rover Coordinates:", rover_coordinates);
         const direction_commands = document.querySelector("#direction-commands").value.split("\n");
-        console.log("Direction Commands:", direction_commands);
         
         let inputTextarea = `${grid_size}\n${no_of_obstscles}\n${obstacle_coordinates}\n${no_of_rovers}\n`;
- 
         
-        console.log("Before cor , conm",inputTextarea);
-        for ( let i = 0 ; i < no_of_rovers ; i++){
-            console.log(rover_coordinates[i] , direction_commands[i]);
-            inputTextarea += `${rover_coordinates[i]}\n${direction_commands[i]}\n`
-            
+        for (let i = 0; i < no_of_rovers; i++) {
+            inputTextarea += `${rover_coordinates[i]}\n${direction_commands[i]}\n`;
         }
         
-        console.log("After",inputTextarea);
         runSimulation(inputTextarea);
       });
  
-      // const inputTextarea = document.getElementById('input');
-    //   const startButton = document.getElementById("start");
       const gridElement = document.getElementById("grid");
       const statusElement = document.getElementById("status");
       const finalPositionsElement = document.getElementById("final-positions");
@@ -195,7 +308,7 @@ LBBF</textarea>
  
       function displayGrid() {
         gridElement.innerHTML = "";
-        gridElement.style.gridTemplateColumns = `repeat(${plateau.grid[0].length}, 30px)`;
+        gridElement.style.gridTemplateColumns = `repeat(${plateau.grid[0].length}, 40px)`;
  
         for (let i = plateau.grid.length - 1; i >= 0; i--) {
           for (let j = 0; j < plateau.grid[i].length; j++) {
@@ -229,10 +342,10 @@ LBBF</textarea>
  
       function runSimulation(inputTextarea) {
         const input = inputTextarea;
-        // debugger
-        console.log("in",input);
-        const { grid, obstacles, count, roverPos, commands } =inputParser(input);
-        console.log(grid, obstacles, count, roverPos, commands);
+        const { grid, obstacles, count, roverPos, commands } = inputParser(input);
+        if (!grid || !obstacles || !count || !roverPos || !commands) {
+          return;
+        }
         plateau = new Plateau(grid, obstacles, count, roverPos, commands);
         currentRoverIndex = 0;
         currentCommandIndex = 0;
@@ -243,9 +356,7 @@ LBBF</textarea>
  
       function placeCurrentRover() {
         const rover = plateau.rovers[currentRoverIndex][0];
-        plateau.grid[rover.roverPos[0]][rover.roverPos[1]] = -(
-          currentRoverIndex + 1
-        );
+        plateau.grid[rover.roverPos[0]][rover.roverPos[1]] = -(currentRoverIndex + 1);
       }
  
       function executeNextCommand() {
@@ -255,29 +366,31 @@ LBBF</textarea>
  
           if (currentCommandIndex < command.length) {
             const instruction = command[currentCommandIndex];
-            const result = plateau.executeInstruction(
-              currentRoverIndex,
-              instruction
-            );
+            const result = plateau.executeInstruction(currentRoverIndex, instruction);
             displayGrid();
             let check = updateStatus(result, currentRoverIndex, instruction);
             if (!check) {
-              currentCommandIndex = command.length;
-            }
-            currentCommandIndex++;
-            setTimeout(executeNextCommand, 1000);
-          } else {
-            currentRoverIndex++;
-            currentCommandIndex = 0;
-            if (currentRoverIndex < plateau.rovers.length) {
-              placeCurrentRover();
-              displayGrid();
-              setTimeout(executeNextCommand, 1000);
+              moveToNextRover();
             } else {
-              statusElement.textContent = "Simulation complete!";
-              displayFinalPositions();
+              currentCommandIndex++;
+              setTimeout(executeNextCommand, 1000);
             }
+          } else {
+            moveToNextRover();
           }
+        }
+      }
+
+      function moveToNextRover() {
+        currentRoverIndex++;
+        currentCommandIndex = 0;
+        if (currentRoverIndex < plateau.rovers.length) {
+          placeCurrentRover();
+          displayGrid();
+          setTimeout(executeNextCommand, 1000);
+        } else {
+          statusElement.textContent = "Simulation complete!";
+          displayFinalPositions();
         }
       }
  
@@ -285,17 +398,18 @@ LBBF</textarea>
         const rover = plateau.rovers[roverIndex][0];
         let status = `Rover ${roverIndex + 1}: `;
         if (result === "turn") {
-          status += `Turned ${instruction === "L" ? "left" : "right"} to face ${
-            rover.roverPos[2]
-          }`;
+          status += `Turned ${instruction === "L" ? "left" : "right"} to face ${rover.roverPos[2]}`;
+          statusElement.textContent = status;
+          return true;
         } else if (result === "move") {
           status += `Moved to position (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
+          statusElement.textContent = status;
+          return true;
         } else if (result === "obstacle") {
-          status += `Encountered an obstacle. Staying at (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
+          status += `Encountered an obstacle. Stopping and moving to next rover.`;
+          statusElement.textContent = status;
           return false;
         }
-        return true;
-        statusElement.textContent = status;
       }
  
       function displayFinalPositions() {
@@ -304,16 +418,9 @@ LBBF</textarea>
         let j = 0;
         for (let i = 0; i < plateau.roverPosArr.length; i++) {
           const li = document.createElement("li");
-          // console.log(plateau,rovers);
- 
           if (j < plateau.rovers.length && plateau.rovers[j][1] === i) {
             const rover = plateau.rovers[j][0];
-            console.log("rover: ", rover);
-            console.log(`${rover.roverPos[0]}`);
- 
-            li.textContent = `Rover ${j + 1}: (${rover.roverPos[0]}, ${
-              rover.roverPos[1]
-            }, ${rover.roverPos[2]})`;
+            li.textContent = `Rover ${j + 1}: (${rover.roverPos[0]}, ${rover.roverPos[1]}, ${rover.roverPos[2]})`;
             j++;
           } else {
             li.textContent = `Rover ${i + 1}: Unable to place`;
@@ -322,8 +429,7 @@ LBBF</textarea>
         }
         finalPositionsElement.appendChild(ul);
       }
- 
-    //   startButton.addEventListener("click", runSimulation);
     </script>
-  </body>
+</body>
 </html>
+
