@@ -70,10 +70,6 @@ export function triggerMove(instruction, grid, roverPos) {
 
 export function triggerTurn(instruction, initialDirection) {
   const directionMap = { N: 0, E: 1, S: 2, W: 3 }
-  // if (!isTurn(instruction)) {
-  //   notificationTrigger( "Invalid turn instruction. Must be 'L' or 'R'.")
-  //   // throw new Error("Invalid turn instruction. Must be 'L' or 'R'.")
-  // }
 
   let direction = directionMap[initialDirection]
   direction = instruction === "L" ? (direction + 3) % 4 : (direction + 1) % 4
