@@ -35,9 +35,15 @@
             align-items: center;
             font-weight: bold;
         }
-        #status {
+        #status, #final-positions {
             margin-top: 10px;
             font-weight: bold;
+        }
+        #final-positions {
+            margin-top: 20px;
+        }
+        #final-positions ul {
+            padding-left: 20px;
         }
     </style>
 </head>
@@ -64,6 +70,7 @@ BFLRL</textarea>
         <h2>Mars Rover Simulation</h2>
         <div id="grid"></div>
         <div id="status"></div>
+        <div id="final-positions"></div>
     </div>
     <script type="module">
         import { Plateau } from './plateau.js';
@@ -73,6 +80,7 @@ BFLRL</textarea>
         const startButton = document.getElementById('start');
         const gridElement = document.getElementById('grid');
         const statusElement = document.getElementById('status');
+        const finalPositionsElement = document.getElementById('final-positions');
 
         let plateau;
         let currentRoverIndex = 0;
@@ -145,6 +153,7 @@ BFLRL</textarea>
                         setTimeout(executeNextCommand, 1000);
                     } else {
                         statusElement.textContent = "Simulation complete!";
+                        displayFinalPositions();
                     }
                 }
             }
@@ -161,6 +170,22 @@ BFLRL</textarea>
                 status += `Encountered an obstacle. Staying at (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
             }
             statusElement.textContent = status;
+        }
+
+        function displayFinalPositions() {
+            finalPositionsElement.innerHTML = '<h3>Final Positions:</h3>';
+            const ul = document.createElement('ul');
+            plateau.rovers.forEach((rover, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Rover ${index + 1}: (${rover.roverPos[0]}, ${rover.roverPos[1]}, ${rover.roverPos[2]})`;
+                ul.appendChild(li);
+            });
+            for (let i = plateau.rovers.length; i < plateau.commands.length; i++) {
+                const li = document.createElement('li');
+                li.textContent = `Rover ${i + 1}: Unable to place`;
+                ul.appendChild(li);
+            }
+            finalPositionsElement.appendChild(ul);
         }
 
         startButton.addEventListener('click', runSimulation);

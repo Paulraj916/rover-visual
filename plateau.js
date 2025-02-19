@@ -35,7 +35,7 @@ export class Plateau {
       this.grid[oldPos[0]][oldPos[1]] = 0
       this.grid[rover.roverPos[0]][rover.roverPos[1]] = -(roverIndex + 1)
     }
-
+    
     return result
   }
 }
