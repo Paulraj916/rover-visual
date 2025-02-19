@@ -1,12 +1,12 @@
-const fs = require('node:fs');
-const directions = ['N', 'E', 'S', 'W'];
+// const fs = require('node:fs');
+export const directions = ['N', 'E', 'S', 'W'];
 
-function isValidPosition(position, grid) {
+export function isValidPosition(position, grid) {
     const [x, y, direction] = position;
     return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && grid[x][y] === 0;
 }
 
-function wrapPosition(resPosition, height, width) {
+export function wrapPosition(resPosition, height, width) {
     if (resPosition[0] < 0) {
         resPosition[0] = height - 1;        // height-x(grid.length)
     }
@@ -22,15 +22,15 @@ function wrapPosition(resPosition, height, width) {
     return resPosition;
 }
 
-function isTurn(instruction) {
+export function isTurn(instruction) {
     return instruction === 'L' || instruction === 'R';
 }
 
-function isMove(instruction) {
+export function isMove(instruction) {
     return instruction === 'F' || instruction === 'B';
 }
 
-function triggerMove(instruction,grid,roverPos){
+export function triggerMove(instruction,grid,roverPos){
     let resPos = [...roverPos]; //let resPos=roverPos; will not work as it will change the original array as well
     let direction=roverPos[2];
     if(instruction==='F'){
@@ -51,7 +51,7 @@ function triggerMove(instruction,grid,roverPos){
     return resPos;
 }
 
-function triggerTurn(instruction, initialDirection) {
+export function triggerTurn(instruction, initialDirection) {
     const directionMap = { 'N': 0, 'E': 1, 'S': 2, 'W': 3 };
     // const reverseDirectionMap = ['N', 'E', 'S', 'W']; //not needed
     if (!isTurn(instruction)) {
@@ -67,19 +67,19 @@ function triggerTurn(instruction, initialDirection) {
 }
 
 
-function getFileContent(inputFilePath){
-    try {
-        const data = fs.readFileSync(inputFilePath, "utf8");
-        return data;
-    } catch (err) {
-        console.error("Error reading file:", err);
-        return null;
-    }
-}
+// export default function getFileContent(inputFilePath){
+//     try {
+//         const data = fs.readFileSync(inputFilePath, "utf8");
+//         return data;
+//     } catch (err) {
+//         console.error("Error reading file:", err);
+//         return null;
+//     }
+// }
 
-function inputParser(inputFilePath){
+export function inputParser(inputFilePath){
 
-    const fileContent = getFileContent(inputFilePath);
+    const fileContent = inputFilePath;
     // console.log(fileContent)
     try{
     let grid = [] , obstacles =[],count ,roverPos =[],commands =[];
@@ -158,5 +158,3 @@ function inputParser(inputFilePath){
 }
 
 
-
-module.exports = { isValidPosition, isMove, isTurn, triggerTurn,inputParser,triggerMove };

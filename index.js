@@ -1,26 +1,30 @@
 
+import Plateau from "./plateau.js";
+import { inputParser } from "./utils.js";  
 
-const Plateau = require("./plateau");
-const { inputParser } = require("./utils");
+const form = document.querySelector("form");
+const textarea = document.querySelector("textarea");
 
-// const grid = [5, 5];
-// const obstacles = [[1, 1], [2, 2]];
-// const count = 2;
-// const roverPos = [[0, 1, "N"], [0, 4, "N"]];
-// const commands = ["LLFB", "LLFB"];
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
+    let inputFilePath = textarea.value.trim();
 
-const inputFilePath = "input.txt"
+    if (!inputFilePath) {
+        console.error("Input field is empty.");
+        return;
+    }
 
-let parsedInputData = inputParser(inputFilePath);
-if(!parsedInputData){
-    console.error("Cannot parse input file");
-    return;
-}
+    let parsedInputData = inputParser(inputFilePath);
+    
+    if (!parsedInputData) {
+        console.error("Cannot parse input data.");
+        return;
+    }
 
-let {grid, obstacles, count, roverPos, commands } = parsedInputData
-console.log(grid, obstacles, count, roverPos, commands);
+    let { grid, obstacles, count, roverPos, commands } = parsedInputData;
+    console.log(grid, obstacles, count, roverPos, commands);
 
-const plateau = new Plateau(grid, obstacles, count, roverPos, commands);
+    const plateau = new Plateau(grid, obstacles, count, roverPos, commands);
 
-plateau.displayGrid();
+});
