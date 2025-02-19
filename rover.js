@@ -12,8 +12,13 @@ export class Rover {
         this.roverPos = resPos
         return "move"
       }
-      
-      notificationTrigger("Invalid move since obstacle found in the way");
+      if(grid[this.roverPos[0]][this.roverPos[1]]===1){
+         notificationTrigger("Invalid move since obstacle found in the way");
+      }
+      else{
+        notificationTrigger(`Invalid move since Rover found in the way`);
+
+      }
       return "obstacle"
     } else if (isTurn(instruction)) {
       this.roverPos[2] = triggerTurn(instruction, this.roverPos[2])

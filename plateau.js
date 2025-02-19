@@ -1,5 +1,5 @@
 import { Rover } from "./rover.js"
-import { isValidPosition } from "./utils.js"
+import { isValidPosition,notificationTrigger } from "./utils.js"
 
 export class Plateau {
   constructor(grid, obstacles, count, roverPos, commands) {
@@ -26,7 +26,7 @@ export class Plateau {
         this.commands.push(commands[i])
       }
       else{
-        notificationTrigger(`Invalid rover position at line ${i+1}`)
+        notificationTrigger(`Obstacle will found when we place Rover ${i+1}`)
       }
     }
   }
