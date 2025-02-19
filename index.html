@@ -10,7 +10,7 @@
         display: flex;
         justify-content: space-between;
         /* padding: 20px; */
-        background-image: url("538159.jpg");
+        background-image: url("https://ik.imagekit.io/eo4tkd1jch/image.jpeg?updatedAt=1739986155419");
         background-size: cover; /* Covers the full screen */
         background-position: center; /* Centers the image */
         background-repeat: no-repeat; /* Ensures the full image is shown */
@@ -68,7 +68,7 @@
       #grid {
         display: grid;
         gap: 2px;
-        margin-top: 20px;
+        margin-top: 70px;
       }
       .cell {
         width: 30px;
@@ -83,12 +83,16 @@
       #final-positions {
         margin-top: 10px;
         font-weight: bold;
+        color: white;
       }
       #final-positions {
         margin-top: 20px;
       }
       #final-positions ul {
         padding-left: 20px;
+      }
+      h2{
+        color: white;
       }
     </style>
   </head>
@@ -101,8 +105,7 @@
             <input
               id="grid-size"
               type="text"
-              placeholder="Size of the grid (eg. 5 5)"
-              value="5 5"
+              placeholder="Size of the grid (eg. 5 5)"           
             />
           </div>
           <div>
@@ -110,7 +113,6 @@
               id="no-of-obstscles"
               type="text"
               placeholder="Number of obtacles (eg. 2)"
-              value="1"
             />
           </div>
           <div>
@@ -118,14 +120,13 @@
               id="obstacle-coordinates"
               name="obstacle coordinates"
               placeholder="Obstacle Coordinates (eg. 2 3)"
-            >3 4</textarea>
+            ></textarea>
           </div>
           <div>
             <input
               id="no-of-rovers"
               type="text"
               placeholder="Number of Rovers (eg. 2)"
-              value="1"
             />
           </div>
           <div>
@@ -133,15 +134,15 @@
               id="rover-coordinates"
               name="rover coordinates"
               placeholder="Rover coordinates with direction (eg. 1 2 N)"
-            >0 1 N
-0 2 S</textarea>
+            >
+          </textarea>
           </div>
           <div>
             <textarea
               id="direction-commands"
               placeholder="Direction commands (eg. FFLBRFB)"
-            >FLLB
-LBBF</textarea>
+            >
+</textarea>
           </div>
           <div><button id="start-btn">Start Movement</button></div>
         </div>
@@ -165,26 +166,17 @@ LBBF</textarea>
         const obstacle_coordinates = document.querySelector("#obstacle-coordinates").value;
         const no_of_rovers = document.querySelector("#no-of-rovers").value;
         const rover_coordinates = document.querySelector("#rover-coordinates").value.split("\n");
-        console.log("Rover Coordinates:", rover_coordinates);
         const direction_commands = document.querySelector("#direction-commands").value.split("\n");
-        console.log("Direction Commands:", direction_commands);
         
         let inputTextarea = `${grid_size}\n${no_of_obstscles}\n${obstacle_coordinates}\n${no_of_rovers}\n`;
  
-        
-        console.log("Before cor , conm",inputTextarea);
         for ( let i = 0 ; i < no_of_rovers ; i++){
-            console.log(rover_coordinates[i] , direction_commands[i]);
             inputTextarea += `${rover_coordinates[i]}\n${direction_commands[i]}\n`
             
         }
-        
-        console.log("After",inputTextarea);
         runSimulation(inputTextarea);
       });
  
-      // const inputTextarea = document.getElementById('input');
-    //   const startButton = document.getElementById("start");
       const gridElement = document.getElementById("grid");
       const statusElement = document.getElementById("status");
       const finalPositionsElement = document.getElementById("final-positions");
@@ -230,9 +222,8 @@ LBBF</textarea>
       function runSimulation(inputTextarea) {
         const input = inputTextarea;
         // debugger
-        console.log("in",input);
         const { grid, obstacles, count, roverPos, commands } =inputParser(input);
-        console.log(grid, obstacles, count, roverPos, commands);
+
         plateau = new Plateau(grid, obstacles, count, roverPos, commands);
         currentRoverIndex = 0;
         currentCommandIndex = 0;
@@ -304,12 +295,9 @@ LBBF</textarea>
         let j = 0;
         for (let i = 0; i < plateau.roverPosArr.length; i++) {
           const li = document.createElement("li");
-          // console.log(plateau,rovers);
  
           if (j < plateau.rovers.length && plateau.rovers[j][1] === i) {
             const rover = plateau.rovers[j][0];
-            console.log("rover: ", rover);
-            console.log(`${rover.roverPos[0]}`);
  
             li.textContent = `Rover ${j + 1}: (${rover.roverPos[0]}, ${
               rover.roverPos[1]
@@ -322,8 +310,6 @@ LBBF</textarea>
         }
         finalPositionsElement.appendChild(ul);
       }
- 
-    //   startButton.addEventListener("click", runSimulation);
     </script>
   </body>
 </html>

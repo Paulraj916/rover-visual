@@ -71,10 +71,6 @@ export function triggerMove(instruction, grid, roverPos) {
 
 export function triggerTurn(instruction, initialDirection) {
   const directionMap = { N: 0, E: 1, S: 2, W: 3 }
-  // if (!isTurn(instruction)) {
-  //   notificationTrigger( "Invalid turn instruction. Must be 'L' or 'R'.")
-  //   // throw new Error("Invalid turn instruction. Must be 'L' or 'R'.")
-  // }
 
   let direction = directionMap[initialDirection]
   direction = instruction === "L" ? (direction + 3) % 4 : (direction + 1) % 4
@@ -93,7 +89,7 @@ export function inputParser(input) {
     if(grid.length  !== 2 || isNaN(grid[0]) && grid[0]<=0 || isNaN(grid[1])&& grid[1]<=0 ){
       notificationTrigger("Grid is Invalid")
       return
-    }console.log(grid);
+    };
     
     const obstacleCount = Number(lines[1])
     if(obstacleCount<0 &&  !obstacleCount || isNaN(obstacleCount)){
@@ -108,7 +104,6 @@ export function inputParser(input) {
         return
       }
       obstacles.push(obstacle)
-      console.log("hu",obstacles);
       
     }
     const count = Number(lines[obstacleCount + 2])
@@ -116,14 +111,12 @@ export function inputParser(input) {
       notificationTrigger("Rover Count is Invalid");
       return
     }
-    console.log("Line",lines.length);
     
     const roverPos = []
     const commands = []
     for (let i = obstacleCount + 3; i < lines.length-1; i += 2) {
       let [x, y, dir] = lines[i].split(" ")
       dir = dir.toUpperCase();
-      console.log("dir: ",dir,x,y)
       if (isNaN(x) || isNaN(y) || !directions.includes(dir)) {
         notificationTrigger(`Invalid rover position at line ${i+1}`)
         return
@@ -133,17 +126,12 @@ export function inputParser(input) {
       }
       roverPos.push([Number(x), Number(y), dir.trim()])
       commands.push(lines[i + 1].trim().toUpperCase())
-      console.log(roverPos , commands);
       
     }
-    console.log("vbn");
-    
-    console.log("log",grid, obstacles, count, roverPos, commands);
     return{grid, obstacles, count, roverPos, commands};
     
   } catch (err) {
     notificationTrigger("Error parsing input:", err)
-    // console.error()
     return
   }
 }
