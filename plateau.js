@@ -6,9 +6,10 @@ export class Plateau {
     this.grid = Array.from({ length: grid[0] }, () => Array(grid[1]).fill(0))
     this.obstacles = obstacles
     this.rovers = []
-    this.commands = commands
+    this.commands = []
     this.setObstacles()
-    this.setRovers(count, roverPos)
+    this.setRovers(count, roverPos,commands)
+    this.roverPosArr = roverPos //To store all rovers 
   }
 
   setObstacles() {
@@ -17,17 +18,21 @@ export class Plateau {
     }
   }
 
-  setRovers(count, roverPos) {
+  setRovers(count, roverPos,commands) {
     for (let i = 0; i < count; i++) {
       if (isValidPosition(roverPos[i], this.grid)) {
         const rover = new Rover(roverPos[i])
-        this.rovers.push(rover)
-      }//else notificationTrigger(`Invalid rover position at line ${i+1}`)
+        this.rovers.push([rover,i]) // valid rover object and index
+        this.commands.push(commands[i])
+      }
+      else{
+        notificationTrigger(`Invalid rover position at line ${i+1}`)
+      }
     }
   }
 
   executeInstruction(roverIndex, instruction) {
-    const rover = this.rovers[roverIndex]
+    const rover = this.rovers[roverIndex][0]
     const oldPos = [...rover.roverPos]
     const result = rover.execute(instruction, this.grid)
 

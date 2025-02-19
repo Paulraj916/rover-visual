@@ -99,7 +99,7 @@ BFLRL</textarea>
                         cell.textContent = '🪨';
                     } else if (value < 0) {
                         const roverIndex = Math.abs(value) - 1;
-                        const direction = plateau.rovers[roverIndex].roverPos[2];
+                        const direction = plateau.rovers[roverIndex][0].roverPos[2];
                         cell.textContent = getDirectionEmoji(direction);
                     }
                     gridElement.appendChild(cell);
@@ -128,20 +128,23 @@ BFLRL</textarea>
         }
 
         function placeCurrentRover() {
-            const rover = plateau.rovers[currentRoverIndex];
+            const rover = plateau.rovers[currentRoverIndex][0];
             plateau.grid[rover.roverPos[0]][rover.roverPos[1]] = -(currentRoverIndex + 1);
         }
 
         function executeNextCommand() {
             if (currentRoverIndex < plateau.rovers.length) {
-                const rover = plateau.rovers[currentRoverIndex];
+                const rover = plateau.rovers[currentRoverIndex][0];
                 const command = plateau.commands[currentRoverIndex];
 
                 if (currentCommandIndex < command.length) {
                     const instruction = command[currentCommandIndex];
                     const result = plateau.executeInstruction(currentRoverIndex, instruction);
                     displayGrid();
-                    updateStatus(result, currentRoverIndex, instruction);
+                    let check = updateStatus(result, currentRoverIndex, instruction);
+                    if(!check){
+                        currentCommandIndex=command.length
+                    }
                     currentCommandIndex++;
                     setTimeout(executeNextCommand, 1000);
                 } else {
@@ -160,7 +163,7 @@ BFLRL</textarea>
         }
 
         function updateStatus(result, roverIndex, instruction) {
-            const rover = plateau.rovers[roverIndex];
+            const rover = plateau.rovers[roverIndex][0];
             let status = `Rover ${roverIndex + 1}: `;
             if (result === 'turn') {
                 status += `Turned ${instruction === 'L' ? 'left' : 'right'} to face ${rover.roverPos[2]}`;
@@ -168,21 +171,31 @@ BFLRL</textarea>
                 status += `Moved to position (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
             } else if (result === 'obstacle') {
                 status += `Encountered an obstacle. Staying at (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
+                return false
             }
+            return true
             statusElement.textContent = status;
         }
 
         function displayFinalPositions() {
             finalPositionsElement.innerHTML = '<h3>Final Positions:</h3>';
             const ul = document.createElement('ul');
-            plateau.rovers.forEach((rover, index) => {
+            let j=0;
+            for(let i=0;i<plateau.roverPosArr.length;i++){
                 const li = document.createElement('li');
-                li.textContent = `Rover ${index + 1}: (${rover.roverPos[0]}, ${rover.roverPos[1]}, ${rover.roverPos[2]})`;
-                ul.appendChild(li);
-            });
-            for (let i = plateau.rovers.length; i < plateau.commands.length; i++) {
-                const li = document.createElement('li');
-                li.textContent = `Rover ${i + 1}: Unable to place`;
+                // console.log(plateau,rovers);
+                
+                if(j<plateau.rovers.length && plateau.rovers[j][1]===i){
+                    const rover=plateau.rovers[j][0];
+                    console.log("rover: ",rover);
+                    console.log(`${(rover.roverPos)[0]}`);
+                    
+                    li.textContent = `Rover ${j + 1}: (${rover.roverPos[0]}, ${rover.roverPos[1]}, ${rover.roverPos[2]})`;
+                    j++;
+                }
+                else{
+                    li.textContent = `Rover ${i + 1}: Unable to place`;
+                }
                 ul.appendChild(li);
             }
             finalPositionsElement.appendChild(ul);
