@@ -14,7 +14,8 @@ const inputFilePath = "input.txt"
 
 let parsedInputData = inputParser(inputFilePath);
 if(!parsedInputData){
-    console.error("Cannot parse input file");
+    // console.error("Cannot parse input file");
+    notificationTrigger("Cannot parse input file")
     return;
 }
 

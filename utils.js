@@ -5,6 +5,29 @@ export function isValidPosition(position, grid) {
   return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length && grid[x][y] === 0
 }
 
+export function notificationTrigger(message) {
+  function showNotification() {
+    new Notification("MarsRover", {
+        body: message,
+    });
+}
+
+  if (Notification.permission === "granted") {
+    showNotification();
+  } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+              showNotification();
+          } else {
+              alert("Notification permission denied.");
+          }
+      });
+  } else {
+      alert("Notification permission denied.");
+  }
+}
+
+
 export function wrapPosition(resPosition, height, width) {
   if (resPosition[0] < 0) {
     resPosition[0] = height - 1
@@ -49,7 +72,8 @@ export function triggerMove(instruction, grid, roverPos) {
 export function triggerTurn(instruction, initialDirection) {
   const directionMap = { N: 0, E: 1, S: 2, W: 3 }
   if (!isTurn(instruction)) {
-    throw new Error("Invalid turn instruction. Must be 'L' or 'R'.")
+    notificationTrigger( "Invalid turn instruction. Must be 'L' or 'R'.")
+    // throw new Error("Invalid turn instruction. Must be 'L' or 'R'.")
   }
 
   let direction = directionMap[initialDirection]
@@ -60,24 +84,47 @@ export function triggerTurn(instruction, initialDirection) {
 
 export function inputParser(input) {
   try {
+    if(!input){
+      notificationTrigger("File is empty");
+    }
     const lines = input.split("\n")
     const grid = lines[0].split(" ").map(Number)
+    if(grid.length  !== 2 || isNaN(grid[0]) || isNaN(grid[1])){
+      notificationTrigger("Grid is Invalid")
+    }
     const obstacleCount = Number(lines[1])
+    if(!obstacleCount || isNaN(obstacleCount)){
+      notificationTrigger("obstacleCount is Invalid")
+    }
     const obstacles = []
     for (let i = 2; i < obstacleCount + 2; i++) {
-      obstacles.push(lines[i].split(" ").map(Number))
+      let obstacle = lines[i].split(" ").map(Number);
+      if (obstacle.length !== 2 || isNaN(obstacle[0]) || isNaN(obstacle[1]) || obstacle[0]>=grid[0] || obstacle[1] >= grid[1]) {
+        notificationTrigger(`Invalid obstacle`);
+      }
+      obstacles.push(obstacle)
     }
     const count = Number(lines[obstacleCount + 2])
+    if(!count || isNaN(count)){
+      notificationTrigger("Rover Count is Invalid");
+    }
     const roverPos = []
     const commands = []
     for (let i = obstacleCount + 3; i < lines.length; i += 2) {
       const [x, y, dir] = lines[i].split(" ")
+      if (isNaN(x) || isNaN(y) || !directions.includes(dir)) {
+        notificationTrigger(`Invalid rover position at line ${i+1}`)
+      }
+      if(!Array.from(lines[i + 1].trim()).every((char)=>"LRFB".includes(char))){
+        notificationTrigger(`Invalid command at line ${i + 2}`);
+      }
       roverPos.push([Number(x), Number(y), dir.trim()])
       commands.push(lines[i + 1].trim())
     }
     return { grid, obstacles, count, roverPos, commands }
   } catch (err) {
-    console.error("Error parsing input:", err)
+    notificationTrigger("Error parsing input:", err)
+    // console.error()
     return null
   }
 }

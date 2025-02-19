@@ -22,7 +22,7 @@ export class Plateau {
       if (isValidPosition(roverPos[i], this.grid)) {
         const rover = new Rover(roverPos[i])
         this.rovers.push(rover)
-      }
+      }//else notificationTrigger(`Invalid rover position at line ${i+1}`)
     }
   }
 

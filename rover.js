@@ -1,4 +1,4 @@
-import { isMove, isTurn, triggerMove, triggerTurn } from "./utils.js"
+import { isMove, isTurn, notificationTrigger, triggerMove, triggerTurn } from "./utils.js"
 
 export class Rover {
   constructor(roverPos) {
@@ -12,10 +12,15 @@ export class Rover {
         this.roverPos = resPos
         return "move"
       }
+      
+      notificationTrigger("Invalid move since obstacle found in the way");
       return "obstacle"
     } else if (isTurn(instruction)) {
       this.roverPos[2] = triggerTurn(instruction, this.roverPos[2])
       return "turn"
+    }
+    else{
+      notificationTrigger("Error: Invalid instruction");
     }
   }
 }
