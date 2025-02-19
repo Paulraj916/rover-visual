@@ -1,36 +1,22 @@
-const {isMove,isTurn,triggerMove,triggerTurn} = require('./utils')
+import { isMove, isTurn, triggerMove, triggerTurn } from "./utils.js"
 
-class Rover {
-    constructor(roverPos) {
-        this.roverPos = roverPos;
+export class Rover {
+  constructor(roverPos) {
+    this.roverPos = roverPos
+  }
+
+  execute(instruction, grid) {
+    if (isMove(instruction)) {
+      const resPos = triggerMove(instruction, grid, this.roverPos)
+      if (JSON.stringify(resPos) !== JSON.stringify(this.roverPos)) {
+        this.roverPos = resPos
+        return "move"
+      }
+      return "obstacle"
+    } else if (isTurn(instruction)) {
+      this.roverPos[2] = triggerTurn(instruction, this.roverPos[2])
+      return "turn"
     }
-
-    // inputParser(roverPos) {
-    // }
-
-    execute(command,grid) {
-        for(let instruction of command){
-            
-                        if(isMove(instruction)){
-                            let resPos=triggerMove(instruction,grid,this.roverPos);
-                            if(JSON.stringify(resPos) === JSON.stringify(this.roverPos)){
-                                console.log("Invalid move since obstacle found in the way");
-                                break;
-                            }
-                            this.roverPos=resPos;
-                        }
-                        else if(isTurn(instruction)){
-                            
-                            this.roverPos[2]=triggerTurn(instruction,this.roverPos[2]);
-            
-                        }
-                        else{
-                            console.error("Error");
-                            
-                        }
-        }
-        return this.roverPos;
-    }
+  }
 }
 
-module.exports = Rover;

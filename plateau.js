@@ -1,40 +1,42 @@
-const Rover = require("./rover");
-const { isValidPosition } = require("./utils");
+import { Rover } from "./rover.js"
+import { isValidPosition } from "./utils.js"
 
-class Plateau {
-    constructor(grid, obstacles, count, roverPos, commands) {
-        this.grid = Array.from({ length: grid[0] }, () => Array(grid[1]).fill(0));
-        this.obstacles = obstacles;
-        this.rovers = [];
-        this.setObstacles();
-        this.setRovers(count, roverPos, commands);
+export class Plateau {
+  constructor(grid, obstacles, count, roverPos, commands) {
+    this.grid = Array.from({ length: grid[0] }, () => Array(grid[1]).fill(0))
+    this.obstacles = obstacles
+    this.rovers = []
+    this.commands = commands
+    this.setObstacles()
+    this.setRovers(count, roverPos)
+  }
+
+  setObstacles() {
+    for (const obstacleCoordinate of this.obstacles) {
+      this.grid[obstacleCoordinate[0]][obstacleCoordinate[1]] = 1
+    }
+  }
+
+  setRovers(count, roverPos) {
+    for (let i = 0; i < count; i++) {
+      if (isValidPosition(roverPos[i], this.grid)) {
+        const rover = new Rover(roverPos[i])
+        this.rovers.push(rover)
+      }
+    }
+  }
+
+  executeInstruction(roverIndex, instruction) {
+    const rover = this.rovers[roverIndex]
+    const oldPos = [...rover.roverPos]
+    const result = rover.execute(instruction, this.grid)
+
+    if (result === "move" && (oldPos[0] !== rover.roverPos[0] || oldPos[1] !== rover.roverPos[1])) {
+      this.grid[oldPos[0]][oldPos[1]] = 0
+      this.grid[rover.roverPos[0]][rover.roverPos[1]] = -(roverIndex + 1)
     }
 
-    // Set obstacles in the grid as 1
-    setObstacles() {
-        for (let obstacleCoordinate of this.obstacles) {
-            this.grid[obstacleCoordinate[0]][obstacleCoordinate[1]] = 1;
-        }
-    }
-
-    // Set rovers in the grid as -1,-2,-3,...
-    setRovers(count, roverPos, commands) {
-        for (let i = 0; i < count; i++) {
-            if (isValidPosition(roverPos[i], this.grid)) {
-                const rover = new Rover(roverPos[i]);
-                let updatedPos = rover.execute(commands[i],this.grid);
-                this.rovers.push(updatedPos);
-                this.grid[updatedPos[0]][updatedPos[1]]=-(i+1);
-            }
-        }
-    }
-
-    // Display the grid
-    displayGrid(){
-        for(let i=this.grid.length-1;i>=0;i--){
-            console.log(this.grid[i].join('\t'));
-        }
-    }
+    return result
+  }
 }
 
-module.exports = Plateau;
