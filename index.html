@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mars Rover Simulation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        #input-section {
+            width: 40%;
+        }
+        #simulation-section {
+            width: 55%;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+        }
+        #grid {
+            display: grid;
+            gap: 2px;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ccc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+        #status, #final-positions {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #final-positions {
+            margin-top: 20px;
+        }
+        #final-positions ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="input-section">
+        <h2>Input</h2>
+        <textarea id="input" rows="10" cols="50">5 5
+2
+4 4
+2 2
+4
+0 0 N
+FFLFF
+4 3 E
+LLLLL
+3 3 N
+FFFFF
+2 2 S
+BFLRL</textarea>
+        <br>
+        <button id="start">Start Simulation</button>
+    </div>
+    <div id="simulation-section">
+        <h2>Mars Rover Simulation</h2>
+        <div id="grid"></div>
+        <div id="status"></div>
+        <div id="final-positions"></div>
+    </div>
+    <script type="module">
+        import { Plateau } from './plateau.js';
+        import { inputParser } from './utils.js';
+
+        const inputTextarea = document.getElementById('input');
+        const startButton = document.getElementById('start');
+        const gridElement = document.getElementById('grid');
+        const statusElement = document.getElementById('status');
+        const finalPositionsElement = document.getElementById('final-positions');
+
+        let plateau;
+        let currentRoverIndex = 0;
+        let currentCommandIndex = 0;
+
+        function displayGrid() {
+            gridElement.innerHTML = '';
+            gridElement.style.gridTemplateColumns = `repeat(${plateau.grid[0].length}, 30px)`;
+
+            for (let i = plateau.grid.length - 1; i >= 0; i--) {
+                for (let j = 0; j < plateau.grid[i].length; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    const value = plateau.grid[i][j];
+                    if (value === 1) {
+                        cell.textContent = '🪨';
+                    } else if (value < 0) {
+                        const roverIndex = Math.abs(value) - 1;
+                        const direction = plateau.rovers[roverIndex].roverPos[2];
+                        cell.textContent = getDirectionEmoji(direction);
+                    }
+                    gridElement.appendChild(cell);
+                }
+            }
+        }
+
+        function getDirectionEmoji(direction) {
+            switch (direction) {
+                case 'N': return '⬆️';
+                case 'E': return '➡️';
+                case 'S': return '⬇️';
+                case 'W': return '⬅️';
+            }
+        }
+
+        function runSimulation() {
+            const input = inputTextarea.value;
+            const { grid, obstacles, count, roverPos, commands } = inputParser(input);
+            plateau = new Plateau(grid, obstacles, count, roverPos, commands);
+            currentRoverIndex = 0;
+            currentCommandIndex = 0;
+            placeCurrentRover();
+            displayGrid();
+            executeNextCommand();
+        }
+
+        function placeCurrentRover() {
+            const rover = plateau.rovers[currentRoverIndex];
+            plateau.grid[rover.roverPos[0]][rover.roverPos[1]] = -(currentRoverIndex + 1);
+        }
+
+        function executeNextCommand() {
+            if (currentRoverIndex < plateau.rovers.length) {
+                const rover = plateau.rovers[currentRoverIndex];
+                const command = plateau.commands[currentRoverIndex];
+
+                if (currentCommandIndex < command.length) {
+                    const instruction = command[currentCommandIndex];
+                    const result = plateau.executeInstruction(currentRoverIndex, instruction);
+                    displayGrid();
+                    updateStatus(result, currentRoverIndex, instruction);
+                    currentCommandIndex++;
+                    setTimeout(executeNextCommand, 1000);
+                } else {
+                    currentRoverIndex++;
+                    currentCommandIndex = 0;
+                    if (currentRoverIndex < plateau.rovers.length) {
+                        placeCurrentRover();
+                        displayGrid();
+                        setTimeout(executeNextCommand, 1000);
+                    } else {
+                        statusElement.textContent = "Simulation complete!";
+                        displayFinalPositions();
+                    }
+                }
+            }
+        }
+
+        function updateStatus(result, roverIndex, instruction) {
+            const rover = plateau.rovers[roverIndex];
+            let status = `Rover ${roverIndex + 1}: `;
+            if (result === 'turn') {
+                status += `Turned ${instruction === 'L' ? 'left' : 'right'} to face ${rover.roverPos[2]}`;
+            } else if (result === 'move') {
+                status += `Moved to position (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
+            } else if (result === 'obstacle') {
+                status += `Encountered an obstacle. Staying at (${rover.roverPos[0]}, ${rover.roverPos[1]})`;
+            }
+            statusElement.textContent = status;
+        }
+
+        function displayFinalPositions() {
+            finalPositionsElement.innerHTML = '<h3>Final Positions:</h3>';
+            const ul = document.createElement('ul');
+            plateau.rovers.forEach((rover, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Rover ${index + 1}: (${rover.roverPos[0]}, ${rover.roverPos[1]}, ${rover.roverPos[2]})`;
+                ul.appendChild(li);
+            });
+            for (let i = plateau.rovers.length; i < plateau.commands.length; i++) {
+                const li = document.createElement('li');
+                li.textContent = `Rover ${i + 1}: Unable to place`;
+                ul.appendChild(li);
+            }
+            finalPositionsElement.appendChild(ul);
+        }
+
+        startButton.addEventListener('click', runSimulation);
+    </script>
+</body>
+</html>
+
